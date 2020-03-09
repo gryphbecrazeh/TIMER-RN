@@ -9,17 +9,43 @@ import {
 	TouchableOpacity
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import RenderTimers from "./renderTimers";
 import Styles from "../include/styles";
 import { TimerBuild, TimerBreak } from "../include/classes.jsx";
+import TimerDisplay from "./TimerDisplay";
+
 export default class Server extends Component {
 	state = {
 		timers: [
+			//
 			{
-				length: 100,
-				label: "test",
+				length: 1000000,
+				label: "Timer 1",
+				note: "Test"
+			},
+			{
+				length: 1000000,
+				label: "Timer 2",
+				note: "Test"
+			},
+			{
+				length: 1000000,
+				label: "Timer 3",
+				note: "Test"
+			},
+
+			{
+				length: 1000000,
+				label: "Timer 4",
 				note: "Test"
 			}
 		],
+		timerIndex: 0,
+		timer: {
+			length: 100,
+			label: "test",
+			note: "Test"
+		},
 		time: {
 			h: 0,
 			m: 0,
@@ -27,6 +53,7 @@ export default class Server extends Component {
 		},
 		active: false
 	};
+
 	componentDidMount() {
 		let callServer = async () => {
 			const method = {
@@ -40,30 +67,27 @@ export default class Server extends Component {
 				redirect: "follow",
 				referrerPolicy: "no-referrer"
 			};
+
 			let serverResponse = await axios.get("http://192.168.1.16:5000");
+
 			if (serverResponse) {
 				let json = await serverResponse.data;
 				this.setState({ timers: json }, () => console.log(this.state));
 			}
 		};
+
 		callServer();
 	}
 	render() {
+		let { active, timer, time } = this.state;
+		// let active = this.state.active;
+
 		// Set the interval variable
 		const interval = 1000;
 
 		// Prepare the interval variable
 		let countDown;
 
-		// Decide whetehr to pause or start the timer
-		let timer = () => {
-			if (this.state.active) {
-				setTime();
-			} else {
-				clearInterval(countDown);
-				clearInterval();
-			}
-		};
 		// Decide whether to start the timer or pause it
 		let pressTimer = () => {
 			if (this.state.active === true) {
@@ -72,18 +96,21 @@ export default class Server extends Component {
 				startTimer();
 			}
 		};
+
 		let clearTimer = () => {
 			let defTime = {
 				h: 0,
 				m: 0,
 				s: 0
 			};
+
 			this.setState({ timer: defTime });
 		};
+
 		// Start the timer
 		let startTimer = () => {
 			this.setState({ active: true }, () => {
-				countDown = setInterval(timer, interval);
+				countDown = setInterval(setTime, interval);
 			});
 		};
 
@@ -94,13 +121,24 @@ export default class Server extends Component {
 			});
 		};
 
-		// Update the time state
-		let setTime = () => {
-			let current = new TimerBreak(this.state.time);
-			this.setState({ time: new TimerBuild(current.ms - interval) });
+		// Restart Timer
+		let restartTimer = () => {
+			stopTimer();
 		};
 
-		//
+		// Update the time state
+		let setTime = () => {
+			if (this.state.active) {
+				let current = new TimerBreak(this.state.time);
+				this.setState({
+					time: new TimerBuild(current.ms - interval)
+				});
+			} else {
+				clearInterval(countDown);
+			}
+		};
+
+		//Change Time by input
 		let updateTime = (key, value) => {
 			let currentTime = this.state.time;
 			currentTime[key] = Number(value);
@@ -111,9 +149,14 @@ export default class Server extends Component {
 			});
 		};
 
-		let { active, timers, time } = this.state;
+		// Getting error saying that they're already defined, I believe it's just running this code again ontop of the old code, and that it's never clearing anythign out
+
 		return (
 			<View style={styles.container}>
+				<TimerDisplay>
+					{`${this.state.time.h}:${this.state.time.m}:${this.state.time.s}`}
+				</TimerDisplay>
+				<RenderTimers timers={this.state.timers} />
 				<View style={styles.textContainer}>
 					<TextInput
 						style={styles.input}

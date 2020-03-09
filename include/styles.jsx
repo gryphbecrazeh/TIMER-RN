@@ -45,5 +45,40 @@ export default Styles = {
 		justifyContent: "space-evenly",
 		width: "100%",
 		alignItems: "flex-start"
+	},
+	timerContainer: {
+		flexDirection: "row",
+		justifyContent: "space-evenly",
+		width: "100%",
+		padding: 10,
+		backgroundColor: "rgba(0,0,0,.5)"
+	},
+	timerContainerText: {
+		borderRadius: 5,
+		color: "black",
+		padding: 10,
+		fontWeight: "bold",
+		// width: "100%",
+		marginLeft: 5,
+		marginRight: 5
+	},
+	timerContainerTime: {
+		justifyContent: "space-between",
+		flexDirection: "row"
+	},
+	timerContainerButton: {
+		backgroundColor: "white",
+		borderRadius: 5
+	},
+	TimerDisplayContainer: {
+		backgroundColor: "black",
+		flex: 1,
+		width: "100%",
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	TimerDisplayText: {
+		color: "white",
+		width: "100%"
 	}
 };
